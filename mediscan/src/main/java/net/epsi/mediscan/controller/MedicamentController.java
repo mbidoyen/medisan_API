@@ -27,7 +27,7 @@ public ResponseEntity<Medicament> add(@RequestBody Medicament medicament) {
     if (medicament.getDateFin().isBefore(medicament.getDateDebut())) {
         return ResponseEntity.badRequest().build();
     }
-
+    
     Ordonnance ordonnance = ordonnanceService.getById(medicament.getOrdonnance().getId());
     
     if (ordonnance == null) {

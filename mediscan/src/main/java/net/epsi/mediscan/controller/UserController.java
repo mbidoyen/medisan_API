@@ -1,7 +1,11 @@
 package net.epsi.mediscan.controller;
 
+import net.epsi.mediscan.entities.Medicament;
+import net.epsi.mediscan.entities.Ordonnance;
 import net.epsi.mediscan.entities.User;
 import net.epsi.mediscan.service.IUserService;
+import net.epsi.mediscan.utils.DateUtils;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,18 +22,29 @@ public class UserController {
     private IUserService userService;
 
     @PostMapping
-    public ResponseEntity<User> createUser(@RequestBody User user) {
-        User tempUser = this.userService.save(user);
-        tempUser.getOrdonnances().forEach(ordonnance -> {
-            ordonnance.setUser(tempUser);
-            ordonnance.getMedicaments().forEach(medicament -> {
-                medicament.setOrdonnance(ordonnance);
-            });
-        });
+public ResponseEntity<User> createUser(@RequestBody User user) {
+    // Enregistrer l'utilisateur sans ordonnances ni médicaments
+    User tempUser = this.userService.save(user);
 
-        User createdUser = this.userService.save(tempUser);
-        return new ResponseEntity<>(createdUser, HttpStatus.CREATED);
+    for(Ordonnance ordonnance : user.getOrdonnances()){
+        ordonnance.setUser(tempUser);
+        for(Medicament medicament : ordonnance.getMedicaments()){
+            medicament.setOrdonnance(ordonnance);
+        }
     }
+
+    // Si une erreur de validation est trouvée, retourner une réponse 400 (Bad Request)
+    if (!DateUtils.checkDateMedicamentInOrdonnance(user.getOrdonnances())) {
+        return ResponseEntity.badRequest().build();
+    }
+
+    // Si tout est valide, sauvegarder de nouveau avec les associations mises à jour
+    User createdUser = this.userService.save(tempUser);
+    
+    // Retourner l'utilisateur créé avec un statut HTTP 201 (Created)
+    return new ResponseEntity<>(createdUser, HttpStatus.CREATED);
+}
+
 
     @GetMapping("/{id}")
     public ResponseEntity<User> getUserById(@PathVariable Long id) {
@@ -68,6 +83,11 @@ public class UserController {
         User existingUser = userService.getById(id);
         if (existingUser == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+
+        if (!DateUtils.checkDateMedicamentInOrdonnance(user.getOrdonnances())) {
+            return ResponseEntity.badRequest().build();
         }
 
         existingUser.setPrenom(user.getPrenom());

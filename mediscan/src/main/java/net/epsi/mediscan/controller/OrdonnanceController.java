@@ -1,9 +1,11 @@
 package net.epsi.mediscan.controller;
 
+import net.epsi.mediscan.entities.Medicament;
 import net.epsi.mediscan.entities.Ordonnance;
 import net.epsi.mediscan.entities.User;
 import net.epsi.mediscan.service.IOrdonnanceService; // Assurez-vous que ce service existe
 import net.epsi.mediscan.service.IUserService;
+import net.epsi.mediscan.utils.MediscanUtil;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -27,10 +29,8 @@ public class OrdonnanceController {
         User user = this.userService.getById(ordonnance.getUser().getId());
         ordonnance.setUser(user);
         Ordonnance ordonnanceTemp = ordonnanceService.save(ordonnance);
-        ordonnanceTemp.getMedicaments().forEach(medicament -> {
-            medicament.setOrdonnance(ordonnanceTemp);
-        });
-        Ordonnance createdOrdonnance = ordonnanceService.save(ordonnance);
+        MediscanUtil.setOrdonnanceInMedicament(ordonnanceTemp, ordonnance.getMedicaments());
+        Ordonnance createdOrdonnance = ordonnanceService.save(ordonnanceTemp);
         return new ResponseEntity<>(createdOrdonnance, HttpStatus.CREATED); // Retourner l'ordonnance créée avec un statut 201
     }
 
@@ -65,10 +65,22 @@ public class OrdonnanceController {
     @PatchMapping("/{id}")
     public ResponseEntity<Boolean> updateOrdonnance(@PathVariable Long id, @RequestBody Ordonnance ordonnance) {
         Ordonnance ordonnanceToUpdate = this.ordonnanceService.getById(id);
+        boolean invalidDate = false;
         if (ordonnanceToUpdate == null) {
             return new ResponseEntity<>(false, HttpStatus.NOT_FOUND);
         }
+        
+        for(Medicament medicament : ordonnance.getMedicaments()){
+            if (medicament.getDateFin().isBefore(medicament.getDateDebut())) {
+                invalidDate = true;
+                break;
+            }
+        }    
 
+        if (invalidDate) {
+            return ResponseEntity.badRequest().build();
+        }
+        
         ordonnanceToUpdate.setDatePrescription(ordonnance.getDatePrescription());
         ordonnanceToUpdate.setUser(ordonnance.getUser());
         ordonnanceToUpdate.setMedicaments(ordonnance.getMedicaments());
