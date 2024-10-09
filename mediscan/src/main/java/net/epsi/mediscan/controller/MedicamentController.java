@@ -47,22 +47,20 @@ public class MedicamentController {
     public ResponseEntity<Medicament> getMedicamentById(@PathVariable Long id) {
         Medicament medicament = this.medicamentService.getById(id);
         if (medicament != null) {
-            return new ResponseEntity<>(medicament, HttpStatus.OK); // Renvoie le médicament avec un statut 200 OK
-        } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND); // Renvoie un statut 404 si le médicament n'est pas
-                                                               // trouvé
-        }
+            return new ResponseEntity<>(medicament, HttpStatus.OK);
+        } 
+        
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);  
     }
 
     // Mettre à jour un médicament
-    @PatchMapping("/{id}") // Utilisez @PathVariable pour obtenir l'ID
+    @PatchMapping("/{id}")
     public ResponseEntity<Boolean> updateMedicament(@PathVariable Long id, @RequestBody Medicament medicament) {
         Medicament medicamentToUpdate = this.medicamentService.getById(id);
         if (medicamentToUpdate == null) {
             return new ResponseEntity<>(false, HttpStatus.NOT_FOUND);
         }
 
-        // Mettre à jour les propriétés
         medicamentToUpdate.setNom(medicament.getNom());
         medicamentToUpdate.setDose(medicament.getDose());
         medicamentToUpdate.setNbrPriseMatin(medicament.getNbrPriseMatin());
@@ -72,19 +70,19 @@ public class MedicamentController {
         medicamentToUpdate.setDateFin(medicament.getDateFin());
 
         this.medicamentService.update(medicamentToUpdate);
-        return new ResponseEntity<>(true, HttpStatus.OK); // Indiquer que la mise à jour a réussi
+        return new ResponseEntity<>(true, HttpStatus.OK);
     }
 
     // Récupérer tous les médicaments
     @GetMapping
     public ResponseEntity<List<Medicament>> getAll() {
-        List<Medicament> medicaments = this.medicamentService.getALl(); // Corriger l'appel pour le service
+        List<Medicament> medicaments = this.medicamentService.getALl();
 
         if (!medicaments.isEmpty()) {
-            return new ResponseEntity<>(medicaments, HttpStatus.OK); // Renvoie la liste avec un statut 200 OK
+            return new ResponseEntity<>(medicaments, HttpStatus.OK);
         }
 
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT); // Renvoie un statut 204 si la liste est vide
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     // Supprimer un médicament

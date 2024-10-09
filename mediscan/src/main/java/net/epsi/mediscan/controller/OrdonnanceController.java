@@ -3,7 +3,7 @@ package net.epsi.mediscan.controller;
 import net.epsi.mediscan.entities.Medicament;
 import net.epsi.mediscan.entities.Ordonnance;
 import net.epsi.mediscan.entities.User;
-import net.epsi.mediscan.service.IOrdonnanceService; // Assurez-vous que ce service existe
+import net.epsi.mediscan.service.IOrdonnanceService;
 import net.epsi.mediscan.service.IUserService;
 import net.epsi.mediscan.utils.MediscanUtil;
 
