@@ -5,7 +5,6 @@ import lombok.Data;
 import java.time.LocalDate;
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 @Entity
@@ -22,6 +21,6 @@ public class Ordonnance {
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private User user; // Utilisateur associé à cette ordonnance
 
-    @OneToMany(mappedBy = "ordonnance", fetch = FetchType.EAGER) // Relation avec Medicament
+    @OneToMany(mappedBy = "ordonnance", fetch = FetchType.EAGER, cascade = CascadeType.ALL) // Relation avec Medicament
     private List<Medicament> medicaments; // Liste des médicaments associés à cette ordonnance
 }

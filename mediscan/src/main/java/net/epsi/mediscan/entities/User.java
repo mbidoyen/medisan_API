@@ -17,6 +17,6 @@ public class User {
     private String prenom;
     private String nom;
     private LocalDate birthday;
-    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<Ordonnance> ordonnances = new ArrayList<>();
 }

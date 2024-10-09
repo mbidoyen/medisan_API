@@ -85,7 +85,7 @@ public class OrdonnanceController {
         if (ordonnance == null) {
             return new ResponseEntity<>(false, HttpStatus.NOT_FOUND);
         }
-
+        
         this.ordonnanceService.delete(ordonnance);
         return new ResponseEntity<>(true, HttpStatus.OK); // Renvoie un statut 200 OK après suppression
     }
