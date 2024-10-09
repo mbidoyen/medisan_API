@@ -6,6 +6,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 @Entity
 @Data
@@ -18,7 +19,7 @@ public class Ordonnance {
 
     @ManyToOne // Relation ManyToOne avec User
     @JoinColumn(name = "user_id")
-    @JsonIgnore
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private User user; // Utilisateur associé à cette ordonnance
 
     @OneToMany(mappedBy = "ordonnance", fetch = FetchType.EAGER) // Relation avec Medicament

@@ -5,6 +5,7 @@ import lombok.Data;
 import java.time.LocalDate;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 @Entity
 @Data
@@ -23,6 +24,6 @@ public class Medicament {
 
     @ManyToOne // Relation ManyToOne avec Ordonnance
     @JoinColumn(name = "ordonnance_id")
-    @JsonIgnore // Colonne qui représente la clé étrangère dans la table Medicament
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY) // Colonne qui représente la clé étrangère dans la table Medicament
     private Ordonnance ordonnance; // Ordonnance associée à ce médicament
 }
