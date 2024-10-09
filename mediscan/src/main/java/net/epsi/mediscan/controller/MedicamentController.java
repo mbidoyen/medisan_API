@@ -1,7 +1,10 @@
 package net.epsi.mediscan.controller;
 
 import net.epsi.mediscan.entities.Medicament;
+import net.epsi.mediscan.entities.Ordonnance;
 import net.epsi.mediscan.service.IMedicamentService;
+import net.epsi.mediscan.service.IOrdonnanceService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,13 +18,29 @@ public class MedicamentController {
 
     @Autowired
     private IMedicamentService medicamentService;
-
+    @Autowired
+    private IOrdonnanceService ordonnanceService;
     // Ajouter un médicament
     @PostMapping
-    public ResponseEntity<Medicament> add(@RequestBody Medicament medicament) {
-        Medicament createdMedicament = medicamentService.save(medicament); // Appeler le service pour sauvegarder
-        return new ResponseEntity<>(createdMedicament, HttpStatus.CREATED); // Retourner le médicament créé avec statut 201
+public ResponseEntity<Medicament> add(@RequestBody Medicament medicament) {
+    
+    if (medicament.getDateFin().isBefore(medicament.getDateDebut())) {
+        return ResponseEntity.badRequest().build();
     }
+
+    Ordonnance ordonnance = ordonnanceService.getById(medicament.getOrdonnance().getId());
+    
+    if (ordonnance == null) {
+        return ResponseEntity.notFound().build();
+    }
+
+    medicament.setOrdonnance(ordonnance);
+
+    Medicament createdMedicament = medicamentService.save(medicament);
+
+    return new ResponseEntity<>(createdMedicament, HttpStatus.CREATED);
+}
+
 
     // Récupérer un médicament par ID
     @GetMapping("/{id}")

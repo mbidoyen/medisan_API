@@ -11,80 +11,81 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RestController
-@RequestMapping("/users") // Base URL for the User API
+@RequestMapping("/users")
 public class UserController {
 
     @Autowired
     private IUserService userService;
 
-    // Endpoint to create a new user
     @PostMapping
     public ResponseEntity<User> createUser(@RequestBody User user) {
-        User createdUser = this.userService.save(user);
-        return new ResponseEntity<>(createdUser, HttpStatus.CREATED); // Return created user with 201 status
+        User tempUser = this.userService.save(user);
+        tempUser.getOrdonnances().forEach(ordonnance -> {
+            ordonnance.setUser(tempUser);
+            ordonnance.getMedicaments().forEach(medicament -> {
+                medicament.setOrdonnance(ordonnance);
+            });
+        });
+
+        User createdUser = this.userService.save(tempUser);
+        return new ResponseEntity<>(createdUser, HttpStatus.CREATED);
     }
 
-    // Endpoint to get a user by ID
     @GetMapping("/{id}")
-public ResponseEntity<User> getUserById(@PathVariable Long id) {
-    User user = userService.getById(id);
-    if (user != null) {
-        // S'assurer que la liste ordonnances est initialisée
-        if (user.getOrdonnances() == null) {
-            user.setOrdonnances(new ArrayList<>()); // Initialiser en tableau vide
+    public ResponseEntity<User> getUserById(@PathVariable Long id) {
+        User user = userService.getById(id);
+        if (user != null) {
+            
+            if (user.getOrdonnances() == null) {
+                user.setOrdonnances(new ArrayList<>());
+            }
+            return new ResponseEntity<>(user, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        return new ResponseEntity<>(user, HttpStatus.OK);
-    } else {
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
-}
 
 
-    // Endpoint to get all users
     @GetMapping
     public ResponseEntity<List<User>> getAllUsers() {
         List<User> users = userService.getAll();
-        // Parcours des utilisateurs pour s'assurer que la liste des ordonnances est initialisée
         for (User user : users) {
             if (user.getOrdonnances() == null) {
-                user.setOrdonnances(new ArrayList<>()); // Initialiser si null
+                user.setOrdonnances(new ArrayList<>());
             }
         }
 
         if (!users.isEmpty()) {
-            return new ResponseEntity<>(users, HttpStatus.OK); // Retourne la liste des utilisateurs
+            return new ResponseEntity<>(users, HttpStatus.OK);
         }
 
-        return new ResponseEntity<>(new ArrayList<>(), HttpStatus.OK); // Retourne un tableau vide avec 200 OK
+        return new ResponseEntity<>(new ArrayList<>(), HttpStatus.OK);
     }
 
 
-    // Endpoint to update an existing user
     @PatchMapping("/{id}")
     public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody User user) {
         User existingUser = userService.getById(id);
         if (existingUser == null) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND); // Return 404 if user is not found
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        
-        // Update user fields
+
         existingUser.setPrenom(user.getPrenom());
         existingUser.setNom(user.getNom());
         existingUser.setBirthday(user.getBirthday());
 
-        userService.update(existingUser); // Call service to update user
-        return new ResponseEntity<>(existingUser, HttpStatus.OK); // Return updated user with 200 OK status
+        userService.update(existingUser);
+        return new ResponseEntity<>(existingUser, HttpStatus.OK);
     }
 
-    // Endpoint to delete a user
     @DeleteMapping("/{id}")
     public ResponseEntity<Boolean> deleteUser(@PathVariable Long id) {
         User user = userService.getById(id);
         if (user == null) {
-            return new ResponseEntity<>(false, HttpStatus.NOT_FOUND); // Return 404 if user is not found
+            return new ResponseEntity<>(false, HttpStatus.NOT_FOUND);
         }
 
-        userService.delete(user); // Call service to delete user
-        return new ResponseEntity<>(true, HttpStatus.OK); // Return true with 200 OK status
+        userService.delete(user);
+        return new ResponseEntity<>(true, HttpStatus.OK);
     }
 }
