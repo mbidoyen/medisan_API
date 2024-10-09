@@ -15,7 +15,8 @@ public class Ordonnance {
     private Long id;
 
     private LocalDate datePrescription;
-
+    private String imagePath;
+    
     @ManyToOne
     @JoinColumn(name = "user_id")
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
