@@ -22,35 +22,30 @@ public class UserController {
     private IUserService userService;
 
     @PostMapping
-public ResponseEntity<User> createUser(@RequestBody User user) {
-    // Enregistrer l'utilisateur sans ordonnances ni médicaments
-    User tempUser = this.userService.save(user);
+    public ResponseEntity<User> createUser(@RequestBody User user) {
+        User tempUser = this.userService.save(user);
 
-    for(Ordonnance ordonnance : user.getOrdonnances()){
-        ordonnance.setUser(tempUser);
-        for(Medicament medicament : ordonnance.getMedicaments()){
-            medicament.setOrdonnance(ordonnance);
+        for (Ordonnance ordonnance : user.getOrdonnances()) {
+            ordonnance.setUser(tempUser);
+            for (Medicament medicament : ordonnance.getMedicaments()) {
+                medicament.setOrdonnance(ordonnance);
+            }
         }
+
+        if (!DateUtils.checkDateMedicamentInOrdonnance(user.getOrdonnances())) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        User createdUser = this.userService.save(tempUser);
+
+        return new ResponseEntity<>(createdUser, HttpStatus.CREATED);
     }
-
-    // Si une erreur de validation est trouvée, retourner une réponse 400 (Bad Request)
-    if (!DateUtils.checkDateMedicamentInOrdonnance(user.getOrdonnances())) {
-        return ResponseEntity.badRequest().build();
-    }
-
-    // Si tout est valide, sauvegarder de nouveau avec les associations mises à jour
-    User createdUser = this.userService.save(tempUser);
-    
-    // Retourner l'utilisateur créé avec un statut HTTP 201 (Created)
-    return new ResponseEntity<>(createdUser, HttpStatus.CREATED);
-}
-
 
     @GetMapping("/{id}")
     public ResponseEntity<User> getUserById(@PathVariable Long id) {
         User user = userService.getById(id);
         if (user != null) {
-            
+
             if (user.getOrdonnances() == null) {
                 user.setOrdonnances(new ArrayList<>());
             }
@@ -59,7 +54,6 @@ public ResponseEntity<User> createUser(@RequestBody User user) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
-
 
     @GetMapping
     public ResponseEntity<List<User>> getAllUsers() {
@@ -77,14 +71,12 @@ public ResponseEntity<User> createUser(@RequestBody User user) {
         return new ResponseEntity<>(new ArrayList<>(), HttpStatus.OK);
     }
 
-
     @PatchMapping("/{id}")
     public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody User user) {
         User existingUser = userService.getById(id);
         if (existingUser == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-
 
         if (!DateUtils.checkDateMedicamentInOrdonnance(user.getOrdonnances())) {
             return ResponseEntity.badRequest().build();

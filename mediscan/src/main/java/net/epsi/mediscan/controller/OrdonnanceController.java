@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+
 @RestController
 @RequestMapping("/ordonnances")
 public class OrdonnanceController {
@@ -31,9 +32,8 @@ public class OrdonnanceController {
         Ordonnance ordonnanceTemp = ordonnanceService.save(ordonnance);
         MediscanUtil.setOrdonnanceInMedicament(ordonnanceTemp, ordonnance.getMedicaments());
         Ordonnance createdOrdonnance = ordonnanceService.save(ordonnanceTemp);
-        return new ResponseEntity<>(createdOrdonnance, HttpStatus.CREATED); // Retourner l'ordonnance créée avec un statut 201
+        return new ResponseEntity<>(createdOrdonnance, HttpStatus.CREATED);
     }
-
 
     @GetMapping("/{id}")
     public ResponseEntity<Ordonnance> getOrdonnanceById(@PathVariable Long id) {
@@ -69,18 +69,18 @@ public class OrdonnanceController {
         if (ordonnanceToUpdate == null) {
             return new ResponseEntity<>(false, HttpStatus.NOT_FOUND);
         }
-        
-        for(Medicament medicament : ordonnance.getMedicaments()){
+
+        for (Medicament medicament : ordonnance.getMedicaments()) {
             if (medicament.getDateFin().isBefore(medicament.getDateDebut())) {
                 invalidDate = true;
                 break;
             }
-        }    
+        }
 
         if (invalidDate) {
             return ResponseEntity.badRequest().build();
         }
-        
+
         ordonnanceToUpdate.setDatePrescription(ordonnance.getDatePrescription());
         ordonnanceToUpdate.setUser(ordonnance.getUser());
         ordonnanceToUpdate.setMedicaments(ordonnance.getMedicaments());
@@ -89,7 +89,6 @@ public class OrdonnanceController {
         return new ResponseEntity<>(true, HttpStatus.OK);
     }
 
-    
     @DeleteMapping("/{id}")
     public ResponseEntity<Boolean> delete(@PathVariable Long id) {
         Ordonnance ordonnance = this.ordonnanceService.getById(id);

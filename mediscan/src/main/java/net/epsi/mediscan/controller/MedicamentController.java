@@ -20,27 +20,27 @@ public class MedicamentController {
     private IMedicamentService medicamentService;
     @Autowired
     private IOrdonnanceService ordonnanceService;
+
     // Ajouter un médicament
     @PostMapping
-public ResponseEntity<Medicament> add(@RequestBody Medicament medicament) {
-    
-    if (medicament.getDateFin().isBefore(medicament.getDateDebut())) {
-        return ResponseEntity.badRequest().build();
+    public ResponseEntity<Medicament> saveMedicament(@RequestBody Medicament medicament) {
+
+        if (medicament.getDateFin().isBefore(medicament.getDateDebut())) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        Ordonnance ordonnance = ordonnanceService.getById(medicament.getOrdonnance().getId());
+
+        if (ordonnance == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        medicament.setOrdonnance(ordonnance);
+
+        Medicament createdMedicament = medicamentService.save(medicament);
+
+        return new ResponseEntity<>(createdMedicament, HttpStatus.CREATED);
     }
-    
-    Ordonnance ordonnance = ordonnanceService.getById(medicament.getOrdonnance().getId());
-    
-    if (ordonnance == null) {
-        return ResponseEntity.notFound().build();
-    }
-
-    medicament.setOrdonnance(ordonnance);
-
-    Medicament createdMedicament = medicamentService.save(medicament);
-
-    return new ResponseEntity<>(createdMedicament, HttpStatus.CREATED);
-}
-
 
     // Récupérer un médicament par ID
     @GetMapping("/{id}")
@@ -49,7 +49,8 @@ public ResponseEntity<Medicament> add(@RequestBody Medicament medicament) {
         if (medicament != null) {
             return new ResponseEntity<>(medicament, HttpStatus.OK); // Renvoie le médicament avec un statut 200 OK
         } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND); // Renvoie un statut 404 si le médicament n'est pas trouvé
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND); // Renvoie un statut 404 si le médicament n'est pas
+                                                               // trouvé
         }
     }
 
@@ -87,7 +88,7 @@ public ResponseEntity<Medicament> add(@RequestBody Medicament medicament) {
     }
 
     // Supprimer un médicament
-    @DeleteMapping("/{id}") // Utilisez @PathVariable pour obtenir l'ID
+    @DeleteMapping("/{id}")
     public ResponseEntity<Boolean> delete(@PathVariable Long id) {
         Medicament getMedicament = this.medicamentService.getById(id);
         if (getMedicament == null) {
@@ -95,6 +96,6 @@ public ResponseEntity<Medicament> add(@RequestBody Medicament medicament) {
         }
 
         this.medicamentService.delete(getMedicament);
-        return new ResponseEntity<>(true, HttpStatus.OK); // Renvoie un statut 200 OK après suppression
+        return new ResponseEntity<>(true, HttpStatus.OK);
     }
 }

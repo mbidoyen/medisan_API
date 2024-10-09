@@ -15,7 +15,7 @@ public class DateUtils {
                 }
             }
         }
-        
+
         return true;
     }
 
@@ -27,7 +27,7 @@ public class DateUtils {
                 }
             }
         }
-        
+
         return true; // Tous les médicaments sont valides
     }
 

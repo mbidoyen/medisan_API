@@ -10,15 +10,14 @@ import net.epsi.mediscan.repository.OrdonnanceRepository;
 import net.epsi.mediscan.service.IOrdonnanceService;
 
 @Service
-public class OrdonnanceServiceIMPL implements IOrdonnanceService{
+public class OrdonnanceServiceIMPL implements IOrdonnanceService {
 
     @Autowired
     private OrdonnanceRepository ordonnanceRepository;
 
-
     @Override
     public Ordonnance save(Ordonnance ordonnance) {
-    return this.ordonnanceRepository.save(ordonnance);
+        return this.ordonnanceRepository.save(ordonnance);
     }
 
     @Override

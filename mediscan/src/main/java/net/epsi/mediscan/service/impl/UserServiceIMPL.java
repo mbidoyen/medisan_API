@@ -10,7 +10,7 @@ import net.epsi.mediscan.repository.UserRepository;
 import net.epsi.mediscan.service.IUserService;
 
 @Service
-public class UserServiceIMPL implements IUserService{
+public class UserServiceIMPL implements IUserService {
 
     @Autowired
     private UserRepository userRepository;

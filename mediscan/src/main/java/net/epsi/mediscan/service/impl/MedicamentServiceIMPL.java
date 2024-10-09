@@ -10,14 +10,14 @@ import net.epsi.mediscan.repository.MedicamentRepository;
 import net.epsi.mediscan.service.IMedicamentService;
 
 @Service
-public class MedicamentServiceIMPL implements IMedicamentService{
+public class MedicamentServiceIMPL implements IMedicamentService {
 
     @Autowired
     private MedicamentRepository medicamentRepository;
 
     @Override
     public Medicament save(Medicament medicament) {
-       return this.medicamentRepository.save(medicament);
+        return this.medicamentRepository.save(medicament);
     }
 
     @Override

@@ -6,6 +6,6 @@ import org.springframework.stereotype.Repository;
 import net.epsi.mediscan.entities.Ordonnance;
 
 @Repository
-public interface OrdonnanceRepository extends JpaRepository<Ordonnance, Long>{
+public interface OrdonnanceRepository extends JpaRepository<Ordonnance, Long> {
 
 }

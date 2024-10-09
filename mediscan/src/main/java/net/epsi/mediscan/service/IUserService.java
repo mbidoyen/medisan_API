@@ -6,9 +6,13 @@ import net.epsi.mediscan.entities.User;
 
 public interface IUserService {
     User save(User user);
-    void update (User user);
+
+    void update(User user);
+
     void delete(User user);
+
     User getById(long id);
+
     List<User> getAll();
 
 }

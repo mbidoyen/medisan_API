@@ -11,18 +11,18 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class Medicament {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id; // Identifiant unique du médicament
+    private Long id;
 
-    private String nom; // Nom du médicament
-    private Integer dose; // Dose du médicament
-    private Integer nbrPriseMatin; // Nombre de prises le matin
-    private Integer nbrPriseMidi; // Nombre de prises à midi
-    private Integer nbrPriseSoir; // Nombre de prises le soir
-    private LocalDate dateDebut; // Date de début de prise
-    private LocalDate dateFin; // Date de fin de prise
+    private String nom;
+    private Integer dose;
+    private Integer nbrPriseMatin;
+    private Integer nbrPriseMidi;
+    private Integer nbrPriseSoir;
+    private LocalDate dateDebut;
+    private LocalDate dateFin;
 
-    @ManyToOne // Relation ManyToOne avec Ordonnance
+    @ManyToOne
     @JoinColumn(name = "ordonnance_id")
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY) // Colonne qui représente la clé étrangère dans la table Medicament
-    private Ordonnance ordonnance; // Ordonnance associée à ce médicament
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    private Ordonnance ordonnance;
 }

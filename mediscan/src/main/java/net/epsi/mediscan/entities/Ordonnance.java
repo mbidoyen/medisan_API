@@ -12,15 +12,15 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class Ordonnance {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id; // Identifiant unique de l'ordonnance
+    private Long id;
 
-    private LocalDate datePrescription; // Date de prescription
+    private LocalDate datePrescription;
 
-    @ManyToOne // Relation ManyToOne avec User
+    @ManyToOne
     @JoinColumn(name = "user_id")
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    private User user; // Utilisateur associé à cette ordonnance
+    private User user;
 
-    @OneToMany(mappedBy = "ordonnance", fetch = FetchType.EAGER, cascade = CascadeType.ALL) // Relation avec Medicament
-    private List<Medicament> medicaments; // Liste des médicaments associés à cette ordonnance
+    @OneToMany(mappedBy = "ordonnance", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    private List<Medicament> medicaments;
 }
