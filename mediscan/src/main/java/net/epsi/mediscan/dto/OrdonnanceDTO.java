@@ -11,5 +11,4 @@ public class OrdonnanceDTO {
     private Long id;
     private LocalDate datePrescription;
     private List<Medicament> medicaments;
-    private byte[] imageBytes;
 }
