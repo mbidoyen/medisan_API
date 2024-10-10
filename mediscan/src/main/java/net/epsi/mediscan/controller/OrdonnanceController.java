@@ -16,7 +16,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -66,16 +65,10 @@ public class OrdonnanceController {
                 return new ResponseEntity<>(false, HttpStatus.NOT_FOUND); // Ordonnance non trouvée
             }
 
-            // Traitement de l'image
-            String imagePath = ordonnanceService.processImage(file, ordonnance); // Implémentez cette méthode pour gérer le stockage du fichier
-            ordonnance.setImagePath(imagePath); // Mettre à jour le chemin de l'image
-
             // Sauvegarder l'ordonnance mise à jour
             ordonnanceService.save(ordonnance); 
 
             return new ResponseEntity<>(true, HttpStatus.OK); // Renvoie true si tout s'est bien passé
-        } catch (IOException e) {
-            return new ResponseEntity<>(false, HttpStatus.INTERNAL_SERVER_ERROR); // Gérer l'erreur de manière appropriée
         } catch (Exception e) {
             return new ResponseEntity<>(false, HttpStatus.BAD_REQUEST); // Autres erreurs
         }
@@ -97,17 +90,7 @@ public class OrdonnanceController {
 
         // Assurer que la liste des médicaments est initialisée
         ordonnanceDTO.setMedicaments(ordonnance.getMedicaments() != null ? ordonnance.getMedicaments() : new ArrayList<>());
-
-        // Convertir l'image en tableau d'octets
-        String imagePath = ordonnance.getImagePath();
-        if (imagePath != null) {
-            try {
-                ordonnanceDTO.setImageBytes(MediscanUtil.convertImageToByteArray(imagePath));
-            } catch (IOException e) {
-                e.printStackTrace(); // Considérer une meilleure gestion d'erreur ici
-            }
-        }
-
+        
         // Retourner l'ordonnanceDTO avec un statut OK
         return new ResponseEntity<>(ordonnanceDTO, HttpStatus.OK);
     }
@@ -135,17 +118,7 @@ public class OrdonnanceController {
             ordonnanceDTO.setMedicaments(
                     ordonnance.getMedicaments() != null ? ordonnance.getMedicaments() : new ArrayList<>());
 
-            // Gestion de l'image
-            String imagePath = ordonnance.getImagePath();
-            if (imagePath != null) {
-                try {
-                    ordonnanceDTO.setImageBytes(MediscanUtil.convertImageToByteArray(imagePath));
-                } catch (IOException e) {
-                    e.printStackTrace(); // Considérer une meilleure gestion d'erreur ici
-                }
-            }
 
-            // Ajouter le DTO dans la liste des DTOs
             ordonnanceDTOs.add(ordonnanceDTO);
         }
 
@@ -176,16 +149,6 @@ public class OrdonnanceController {
             // Vérification et initialisation de la liste des médicaments
             ordonnanceDTO.setMedicaments(
                     ordonnance.getMedicaments() != null ? ordonnance.getMedicaments() : new ArrayList<>());
-
-            // Gestion de l'image
-            String imagePath = ordonnance.getImagePath();
-            if (imagePath != null) {
-                try {
-                    ordonnanceDTO.setImageBytes(MediscanUtil.convertImageToByteArray(imagePath));
-                } catch (IOException e) {
-                    e.printStackTrace(); // Considérer une meilleure gestion d'erreur ici
-                }
-            }
 
             // Ajouter le DTO dans la liste des DTOs
             ordonnanceDTOs.add(ordonnanceDTO);
